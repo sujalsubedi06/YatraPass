@@ -12,7 +12,6 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -22,7 +21,7 @@ class WelcomePage extends StatelessWidget {
 
               const WelcomeImage(),
 
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
 
               const WelcomeTitle(),
 
