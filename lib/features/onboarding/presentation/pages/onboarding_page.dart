@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../data/onboarding_data.dart';
 import '../widgets/onboarding_bottom_bar.dart';
@@ -30,7 +31,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         curve: Curves.easeInOut,
       );
     } else {
-      // TODO: Navigate to Login
+      context.go('/welcome');
     }
   }
 
@@ -46,57 +47,50 @@ class _OnboardingPageState extends State<OnboardingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+          child: OnboardingBottomBar(
+            currentPage: _currentPage,
+            pageCount: onboardingPages.length,
+            onSkip: _skip,
+            onNext: _nextPage,
+          ),
+        ),
+      ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: onboardingPages.length,
-                onPageChanged: (index) {
-                  setState(() {
-                    _currentPage = index;
-                  });
-                },
-                itemBuilder: (context, index) {
-                  final page = onboardingPages[index];
+        child: PageView.builder(
+          controller: _pageController,
+          itemCount: onboardingPages.length,
+          onPageChanged: (index) {
+            setState(() {
+              _currentPage = index;
+            });
+          },
+          itemBuilder: (context, index) {
+            final page = onboardingPages[index];
 
-                  return SingleChildScrollView(
-                    physics: const NeverScrollableScrollPhysics(),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 30),
-
-                          OnboardingImage(
-                            image: page.image,
-                          ),
-
-                          const SizedBox(height: 24),
-
-                          OnboardingContent(
-                            title: page.title,
-                            description: page.description,
-                          ),
-                        ],
-                      ),
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 30, 24, 140),
+                child: Column(
+                  children: [
+                    OnboardingImage(
+                      image: page.image,
                     ),
-                  );
-                },
-              ),
-            ),
 
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-              child: OnboardingBottomBar(
-                currentPage: _currentPage,
-                pageCount: onboardingPages.length,
-                onSkip: _skip,
-                onNext: _nextPage,
+                    const SizedBox(height: 24),
+
+                    OnboardingContent(
+                      title: page.title,
+                      description: page.description,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
