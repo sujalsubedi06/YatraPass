@@ -19,9 +19,14 @@ class WelcomePage extends StatelessWidget {
             children: [
               const Spacer(),
 
-              const WelcomeImage(),
+              Expanded(
+                flex: 9,
+                child: const Center(
+                  child: WelcomeImage(),
+                ),
+              ),
 
-              const SizedBox(height: 8),
+              const SizedBox(height: 24),
 
               const WelcomeTitle(),
 
@@ -31,18 +36,24 @@ class WelcomePage extends StatelessWidget {
 
               const Spacer(),
 
-              ContinueButton(
-                onPressed: () {
-                  // TODO: Navigate to Phone Number Screen
-                },
+              SizedBox(
+                width: double.infinity,
+                child: ContinueButton(
+                  onPressed: () {
+                    // TODO
+                  },
+                ),
               ),
 
-              const SizedBox(height: 18),
+              const SizedBox(height: 16),
 
-              SignInButton(
-                onPressed: () {
-                  // TODO: Navigate to Sign In
-                },
+              SizedBox(
+                width: double.infinity,
+                child: SignInButton(
+                  onPressed: () {
+                    // TODO
+                  },
+                ),
               ),
 
               const SizedBox(height: 24),
