@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../widgets/continue_button.dart';
 import '../widgets/signin_button.dart';
@@ -20,7 +21,7 @@ class WelcomePage extends StatelessWidget {
               const Spacer(),
 
               Expanded(
-                flex: 9,
+                flex: 6,
                 child: const Center(
                   child: WelcomeImage(),
                 ),
@@ -40,7 +41,7 @@ class WelcomePage extends StatelessWidget {
                 width: double.infinity,
                 child: ContinueButton(
                   onPressed: () {
-                    // TODO
+                    context.go('/phone');
                   },
                 ),
               ),
@@ -51,7 +52,7 @@ class WelcomePage extends StatelessWidget {
                 width: double.infinity,
                 child: SignInButton(
                   onPressed: () {
-                    // TODO
+                    // TODO: Navigate to Sign In
                   },
                 ),
               ),
