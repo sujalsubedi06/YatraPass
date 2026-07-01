@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 
 class OtpField extends StatelessWidget {
-  const OtpField({super.key});
+  final ValueChanged<String>? onCompleted;
+
+  const OtpField({
+    super.key,
+    this.onCompleted,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +67,7 @@ class OtpField extends StatelessWidget {
         ),
 
         onCompleted: (pin) {
-          debugPrint('OTP: $pin');
+          onCompleted?.call(pin);
         },
       ),
     );

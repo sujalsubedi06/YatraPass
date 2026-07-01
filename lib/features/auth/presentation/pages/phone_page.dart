@@ -51,7 +51,10 @@ class PhonePage extends ConsumerWidget {
                           isLoading: authState.isLoading,
                           onPressed: authState.isValid
                               ? () {
-                            context.go('/otp');
+                            context.go(
+                              '/otp',
+                              extra: authState.phone,
+                            );
                           }
                               : null,
                         ),

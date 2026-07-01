@@ -31,7 +31,13 @@ final appRouter = GoRouter(
 
     GoRoute(
       path: '/otp',
-      builder: (context, state) => const OtpPage(),
+      builder: (context, state) {
+        final phone = state.extra as String? ?? '';
+
+        return OtpPage(
+          phoneNumber: phone,
+        );
+      },
     ),
   ],
 );
