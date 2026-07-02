@@ -50,11 +50,27 @@ class PhonePage extends ConsumerWidget {
                           text: 'Continue',
                           isLoading: authState.isLoading,
                           onPressed: authState.isValid
-                              ? () {
-                            context.go(
-                              '/otp',
-                              extra: authState.phone,
-                            );
+                              ? () async {
+                            try {
+                              await authNotifier.sendOtp();
+
+                              if (!context.mounted) return;
+
+                              context.go(
+                                '/otp',
+                                extra: authState.phone,
+                              );
+                            } catch (e) {
+                              if (!context.mounted) return;
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    e.toString(),
+                                  ),
+                                ),
+                              );
+                            }
                           }
                               : null,
                         ),

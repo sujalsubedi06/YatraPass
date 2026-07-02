@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../data/repositories/auth_repository_impl.dart';
+
 final authProvider =
 StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   return AuthNotifier();
@@ -9,7 +11,10 @@ StateNotifierProvider<AuthNotifier, AuthState>((ref) {
 class AuthNotifier extends StateNotifier<AuthState> {
   AuthNotifier() : super(const AuthState());
 
+  final _repository = AuthRepositoryImpl();
+
   final phoneController = TextEditingController();
+
   final formKey = GlobalKey<FormState>();
 
   void updatePhone(String value) {
@@ -25,24 +30,49 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
   }
 
+  Future<void> sendOtp() async {
+    state = state.copyWith(
+      isLoading: true,
+    );
+
+    try {
+      await _repository.sendOtp(
+        phoneNumber: state.phone,
+      );
+
+      state = state.copyWith(
+        isLoading: false,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+      );
+
+      rethrow;
+    }
+  }
+
   Future<void> verifyOtp() async {
     state = state.copyWith(
       isVerifying: true,
     );
 
-    // Temporary mock verification.
-    // Later this will call the NestJS API.
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      await _repository.verifyOtp(
+        phoneNumber: state.phone,
+        otp: state.otp,
+      );
 
-    state = state.copyWith(
-      isVerifying: false,
-    );
-  }
+      state = state.copyWith(
+        isVerifying: false,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isVerifying: false,
+      );
 
-  void setLoading(bool value) {
-    state = state.copyWith(
-      isLoading: value,
-    );
+      rethrow;
+    }
   }
 
   @override
