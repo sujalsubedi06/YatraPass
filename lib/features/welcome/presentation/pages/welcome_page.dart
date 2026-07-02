@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../app/router/app_routes.dart';
 import '../widgets/continue_button.dart';
 import '../widgets/signin_button.dart';
 import '../widgets/welcome_image.dart';
@@ -20,9 +21,9 @@ class WelcomePage extends StatelessWidget {
             children: [
               const Spacer(),
 
-              Expanded(
+              const Expanded(
                 flex: 6,
-                child: const Center(
+                child: Center(
                   child: WelcomeImage(),
                 ),
               ),
@@ -41,7 +42,7 @@ class WelcomePage extends StatelessWidget {
                 width: double.infinity,
                 child: ContinueButton(
                   onPressed: () {
-                    context.go('/phone');
+                    context.go(AppRoutes.phone);
                   },
                 ),
               ),

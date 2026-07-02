@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../app/router/app_routes.dart';
 import '../widgets/animated_glow.dart';
 import '../widgets/bouncing_loader.dart';
 import '../widgets/loading_text.dart';
@@ -22,9 +23,9 @@ class _SplashPageState extends State<SplashPage> {
     super.initState();
 
     Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        context.go('/onboarding');
-      }
+      if (!mounted) return;
+
+      context.go(AppRoutes.onboarding);
     });
   }
 

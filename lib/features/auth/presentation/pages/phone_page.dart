@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../app/router/app_routes.dart';
 import '../../../../shared/widgets/primary_button.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/phone/auth_header.dart';
@@ -15,6 +16,33 @@ class PhonePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
     final authNotifier = ref.read(authProvider.notifier);
+
+    Future<void> sendOtp() async {
+      final success = await authNotifier.sendOtp();
+
+      if (!context.mounted) return;
+
+      if (!success) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              behavior: SnackBarBehavior.floating,
+              content: Text(
+                authState.errorMessage ?? 'Something went wrong.',
+              ),
+            ),
+          );
+
+        authNotifier.clearError();
+        return;
+      }
+
+      context.go(
+        AppRoutes.otp,
+        extra: authState.phone,
+      );
+    }
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -49,34 +77,9 @@ class PhonePage extends ConsumerWidget {
                         PrimaryButton(
                           text: 'Continue',
                           isLoading: authState.isLoading,
-                          onPressed: authState.isValid
-                              ? () async {
-                            final success =
-                            await authNotifier.sendOtp();
-
-                            if (!context.mounted) return;
-
-                            if (!success) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    ref
-                                        .read(authProvider)
-                                        .errorMessage ??
-                                        'Something went wrong.',
-                                  ),
-                                ),
-                              );
-
-                              authNotifier.clearError();
-                              return;
-                            }
-
-                            context.go(
-                              '/otp',
-                              extra: authState.phone,
-                            );
-                          }
+                          onPressed: authState.isValid &&
+                              !authState.isLoading
+                              ? sendOtp
                               : null,
                         ),
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../app/router/app_routes.dart';
 import '../../data/onboarding_data.dart';
 import '../widgets/onboarding_bottom_bar.dart';
 import '../widgets/onboarding_content.dart';
@@ -31,7 +32,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         curve: Curves.easeInOut,
       );
     } else {
-      context.go('/welcome');
+      context.go(AppRoutes.welcome);
     }
   }
 

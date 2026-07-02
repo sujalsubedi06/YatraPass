@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../app/router/app_routes.dart';
 import '../../../../shared/widgets/primary_button.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/otp/otp_field.dart';
@@ -23,35 +24,34 @@ class OtpPage extends ConsumerWidget {
     final authNotifier = ref.read(authProvider.notifier);
 
     Future<void> verify() async {
-      final success =
-      await authNotifier.verifyOtp();
+      final success = await authNotifier.verifyOtp();
 
       if (!context.mounted) return;
 
       if (!success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              ref
-                  .read(authProvider)
-                  .errorMessage ??
-                  'Something went wrong.',
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              behavior: SnackBarBehavior.floating,
+              content: Text(
+                authState.errorMessage ?? 'Something went wrong.',
+              ),
             ),
-          ),
-        );
+          );
 
         authNotifier.clearError();
         return;
       }
 
-      context.go('/profile-setup');
+      context.go(AppRoutes.profileSetup);
     }
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () => context.pop(),
+          onPressed: context.pop,
           icon: const Icon(Icons.arrow_back_rounded),
         ),
       ),
@@ -68,14 +68,11 @@ class OtpPage extends ConsumerWidget {
                 ),
                 child: IntrinsicHeight(
                   child: Column(
-                    crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Verify your number',
-                        style: theme
-                            .textTheme.headlineMedium
-                            ?.copyWith(
+                        style: theme.textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -91,8 +88,7 @@ class OtpPage extends ConsumerWidget {
 
                       Text(
                         '+977 $phoneNumber',
-                        style: theme.textTheme.titleMedium
-                            ?.copyWith(
+                        style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -110,15 +106,14 @@ class OtpPage extends ConsumerWidget {
                       OtpTimer(
                         onResend: () {
                           debugPrint('Resend OTP');
+                          // TODO: Connect resend OTP API
                         },
                       ),
 
                       const Spacer(),
 
                       PrimaryButton(
-                        text: authState.isVerifying
-                            ? 'Verifying...'
-                            : 'Verify',
+                        text: 'Verify',
                         isLoading: authState.isVerifying,
                         onPressed: authState.isOtpValid &&
                             !authState.isVerifying
