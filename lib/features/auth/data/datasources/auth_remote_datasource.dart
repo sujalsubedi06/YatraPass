@@ -9,7 +9,7 @@ class AuthRemoteDataSource {
   Future<Response> sendOtp({
     required String phoneNumber,
   }) async {
-    return await _dio.post(
+    return _dio.post(
       ApiConstants.sendOtp,
       data: {
         'phoneNumber': phoneNumber,
@@ -21,7 +21,7 @@ class AuthRemoteDataSource {
     required String phoneNumber,
     required String otp,
   }) async {
-    return await _dio.post(
+    return _dio.post(
       ApiConstants.verifyOtp,
       data: {
         'phoneNumber': phoneNumber,
@@ -33,22 +33,28 @@ class AuthRemoteDataSource {
   Future<Response> refreshToken({
     required String refreshToken,
   }) async {
-    return await _dio.post(
+    return _dio.post(
       ApiConstants.refreshToken,
       data: {
         'refreshToken': refreshToken,
       },
+      options: Options(
+        headers: {
+          // Don't send the (possibly expired) access token
+          'Authorization': null,
+        },
+      ),
     );
   }
 
   Future<Response> logout() async {
-    return await _dio.post(
+    return _dio.post(
       ApiConstants.logout,
     );
   }
 
   Future<Response> getCurrentUser() async {
-    return await _dio.get(
+    return _dio.get(
       ApiConstants.me,
     );
   }

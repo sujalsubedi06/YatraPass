@@ -71,14 +71,8 @@ class OtpPage extends ConsumerWidget {
                       const SizedBox(height: 40),
 
                       OtpField(
-                        onCompleted: (otp) async {
+                        onCompleted: (otp) {
                           authNotifier.updateOtp(otp);
-
-                          await authNotifier.verifyOtp();
-
-                          if (context.mounted) {
-                            context.go('/profile-setup');
-                          }
                         },
                       ),
 
@@ -87,7 +81,7 @@ class OtpPage extends ConsumerWidget {
                       OtpTimer(
                         onResend: () {
                           debugPrint('Resend OTP');
-                          // TODO: Connect NestJS resend API
+                          // TODO: Connect resend OTP endpoint
                         },
                       ),
 
@@ -101,10 +95,22 @@ class OtpPage extends ConsumerWidget {
                         onPressed: authState.isVerifying
                             ? null
                             : () async {
-                          await authNotifier.verifyOtp();
+                          try {
+                            await authNotifier.verifyOtp();
 
-                          if (context.mounted) {
-                            context.go('/profile-setup');
+                            if (!context.mounted) return;
+
+                            context.go('/home');
+                          } catch (e) {
+                            if (!context.mounted) return;
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  e.toString(),
+                                ),
+                              ),
+                            );
                           }
                         },
                       ),

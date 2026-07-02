@@ -1,5 +1,6 @@
 import '../../../../core/storage/secure_storage_service.dart';
 import '../datasources/auth_remote_datasource.dart';
+import '../models/user_model.dart';
 
 class AuthRepositoryImpl {
   final AuthRemoteDataSource _remoteDataSource =
@@ -28,6 +29,15 @@ class AuthRepositoryImpl {
     await SecureStorageService.saveTokens(
       accessToken: data['accessToken'],
       refreshToken: data['refreshToken'],
+    );
+  }
+
+  Future<UserModel> getCurrentUser() async {
+    final response =
+    await _remoteDataSource.getCurrentUser();
+
+    return UserModel.fromJson(
+      response.data['data'],
     );
   }
 
