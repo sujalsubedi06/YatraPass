@@ -12,7 +12,7 @@ class DarkTheme {
 
       colorScheme: ColorScheme.dark(
         primary: AppColors.primary,
-        secondary: AppColors.secondary,
+        secondary: AppColors.accent,
 
         surface: AppColors.darkSurface,
 
@@ -31,7 +31,7 @@ class DarkTheme {
         centerTitle: true,
       ),
 
-      cardColor: AppColors.darkSurface,
+      cardColor: AppColors.darkCard,
 
       dividerColor: AppColors.darkBorder,
 
@@ -40,21 +40,21 @@ class DarkTheme {
         fillColor: AppColors.darkSurface,
 
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(
             color: AppColors.darkBorder,
           ),
         ),
 
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(
             color: AppColors.darkBorder,
           ),
         ),
 
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(
             color: AppColors.primary,
             width: 2,

@@ -12,7 +12,7 @@ class LightTheme {
 
       colorScheme: ColorScheme.light(
         primary: AppColors.primary,
-        secondary: AppColors.secondary,
+        secondary: AppColors.accent,
 
         surface: AppColors.lightSurface,
 
@@ -31,7 +31,7 @@ class LightTheme {
         centerTitle: true,
       ),
 
-      cardColor: AppColors.lightSurface,
+      cardColor: AppColors.lightCard,
 
       dividerColor: AppColors.lightBorder,
 
@@ -40,21 +40,21 @@ class LightTheme {
         fillColor: AppColors.lightSurface,
 
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(
             color: AppColors.lightBorder,
           ),
         ),
 
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(
             color: AppColors.lightBorder,
           ),
         ),
 
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(
             color: AppColors.primary,
             width: 2,
