@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../app/router/app_routes.dart';
 
 final profileProvider =
 StateNotifierProvider<ProfileNotifier, ProfileState>(
@@ -16,24 +19,85 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   final formKey = GlobalKey<FormState>();
 
   void updateFirstName(String value) {
-    state = state.copyWith(firstName: value);
+    state = state.copyWith(
+      firstName: value,
+      isValid: _validate(
+        firstName: value,
+        lastName: state.lastName,
+        email: state.email,
+      ),
+    );
   }
 
   void updateLastName(String value) {
-    state = state.copyWith(lastName: value);
+    state = state.copyWith(
+      lastName: value,
+      isValid: _validate(
+        firstName: state.firstName,
+        lastName: value,
+        email: state.email,
+      ),
+    );
   }
 
   void updateEmail(String value) {
-    state = state.copyWith(email: value);
+    state = state.copyWith(
+      email: value,
+      isValid: _validate(
+        firstName: state.firstName,
+        lastName: state.lastName,
+        email: value,
+      ),
+    );
   }
 
-  Future<void> saveProfile() async {
-    state = state.copyWith(isLoading: true);
+  bool _validate({
+    required String firstName,
+    required String lastName,
+    required String email,
+  }) {
+    final emailRegex = RegExp(
+      r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$',
+    );
 
-    // API integration comes later
-    await Future.delayed(const Duration(milliseconds: 800));
+    return firstName.trim().isNotEmpty &&
+        lastName.trim().isNotEmpty &&
+        emailRegex.hasMatch(email.trim());
+  }
 
-    state = state.copyWith(isLoading: false);
+  Future<void> continueSetup(BuildContext context) async {
+    if (!state.isValid) return;
+
+    state = state.copyWith(
+      isLoading: true,
+      errorMessage: null,
+    );
+
+    try {
+      // TODO: Save profile through API
+
+      await Future.delayed(
+        const Duration(milliseconds: 800),
+      );
+
+      if (!context.mounted) return;
+
+      context.go(AppRoutes.emailVerification);
+    } catch (_) {
+      state = state.copyWith(
+        errorMessage: 'Unable to continue. Please try again.',
+      );
+    }
+
+    state = state.copyWith(
+      isLoading: false,
+    );
+  }
+
+  void clearError() {
+    state = state.copyWith(
+      errorMessage: null,
+    );
   }
 
   @override
@@ -49,13 +113,19 @@ class ProfileState {
   final String firstName;
   final String lastName;
   final String email;
+
   final bool isLoading;
+  final bool isValid;
+
+  final String? errorMessage;
 
   const ProfileState({
     this.firstName = '',
     this.lastName = '',
     this.email = '',
     this.isLoading = false,
+    this.isValid = false,
+    this.errorMessage,
   });
 
   ProfileState copyWith({
@@ -63,12 +133,16 @@ class ProfileState {
     String? lastName,
     String? email,
     bool? isLoading,
+    bool? isValid,
+    String? errorMessage,
   }) {
     return ProfileState(
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
       email: email ?? this.email,
       isLoading: isLoading ?? this.isLoading,
+      isValid: isValid ?? this.isValid,
+      errorMessage: errorMessage,
     );
   }
 }
