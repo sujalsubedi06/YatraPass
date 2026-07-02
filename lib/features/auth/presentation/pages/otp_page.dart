@@ -22,6 +22,31 @@ class OtpPage extends ConsumerWidget {
     final authState = ref.watch(authProvider);
     final authNotifier = ref.read(authProvider.notifier);
 
+    Future<void> verify() async {
+      final success =
+      await authNotifier.verifyOtp();
+
+      if (!context.mounted) return;
+
+      if (!success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              ref
+                  .read(authProvider)
+                  .errorMessage ??
+                  'Something went wrong.',
+            ),
+          ),
+        );
+
+        authNotifier.clearError();
+        return;
+      }
+
+      context.go('/profile-setup');
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -43,11 +68,14 @@ class OtpPage extends ConsumerWidget {
                 ),
                 child: IntrinsicHeight(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment:
+                    CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Verify your number',
-                        style: theme.textTheme.headlineMedium?.copyWith(
+                        style: theme
+                            .textTheme.headlineMedium
+                            ?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -63,7 +91,8 @@ class OtpPage extends ConsumerWidget {
 
                       Text(
                         '+977 $phoneNumber',
-                        style: theme.textTheme.titleMedium?.copyWith(
+                        style: theme.textTheme.titleMedium
+                            ?.copyWith(
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -81,7 +110,6 @@ class OtpPage extends ConsumerWidget {
                       OtpTimer(
                         onResend: () {
                           debugPrint('Resend OTP');
-                          // TODO: Connect resend OTP endpoint
                         },
                       ),
 
@@ -92,27 +120,10 @@ class OtpPage extends ConsumerWidget {
                             ? 'Verifying...'
                             : 'Verify',
                         isLoading: authState.isVerifying,
-                        onPressed: authState.isVerifying
-                            ? null
-                            : () async {
-                          try {
-                            await authNotifier.verifyOtp();
-
-                            if (!context.mounted) return;
-
-                            context.go('/home');
-                          } catch (e) {
-                            if (!context.mounted) return;
-
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  e.toString(),
-                                ),
-                              ),
-                            );
-                          }
-                        },
+                        onPressed: authState.isOtpValid &&
+                            !authState.isVerifying
+                            ? verify
+                            : null,
                       ),
 
                       const SizedBox(height: 20),

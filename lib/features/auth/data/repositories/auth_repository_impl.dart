@@ -1,52 +1,75 @@
+import '../../../../core/network/error_handler.dart';
 import '../../../../core/storage/secure_storage_service.dart';
+import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_remote_datasource.dart';
 import '../models/user_model.dart';
 
-class AuthRepositoryImpl {
+class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource _remoteDataSource =
   AuthRemoteDataSource();
 
+  @override
   Future<void> sendOtp({
     required String phoneNumber,
   }) async {
-    await _remoteDataSource.sendOtp(
-      phoneNumber: phoneNumber,
-    );
+    try {
+      await _remoteDataSource.sendOtp(
+        phoneNumber: phoneNumber,
+      );
+    } catch (e) {
+      throw ErrorHandler.handle(e);
+    }
   }
 
+  @override
   Future<void> verifyOtp({
     required String phoneNumber,
     required String otp,
   }) async {
-    final response =
-    await _remoteDataSource.verifyOtp(
-      phoneNumber: phoneNumber,
-      otp: otp,
-    );
+    try {
+      final response =
+      await _remoteDataSource.verifyOtp(
+        phoneNumber: phoneNumber,
+        otp: otp,
+      );
 
-    final data = response.data['data'];
+      final data = response.data['data'];
 
-    await SecureStorageService.saveTokens(
-      accessToken: data['accessToken'],
-      refreshToken: data['refreshToken'],
-    );
+      await SecureStorageService.saveTokens(
+        accessToken: data['accessToken'],
+        refreshToken: data['refreshToken'],
+      );
+    } catch (e) {
+      throw ErrorHandler.handle(e);
+    }
   }
 
+  @override
   Future<UserModel> getCurrentUser() async {
-    final response =
-    await _remoteDataSource.getCurrentUser();
+    try {
+      final response =
+      await _remoteDataSource.getCurrentUser();
 
-    return UserModel.fromJson(
-      response.data['data'],
-    );
+      return UserModel.fromJson(
+        response.data['data'],
+      );
+    } catch (e) {
+      throw ErrorHandler.handle(e);
+    }
   }
 
+  @override
   Future<void> logout() async {
-    await _remoteDataSource.logout();
+    try {
+      await _remoteDataSource.logout();
 
-    await SecureStorageService.clearTokens();
+      await SecureStorageService.clearTokens();
+    } catch (e) {
+      throw ErrorHandler.handle(e);
+    }
   }
 
+  @override
   Future<bool> isLoggedIn() async {
     final token =
     await SecureStorageService.getAccessToken();
@@ -54,10 +77,12 @@ class AuthRepositoryImpl {
     return token != null;
   }
 
+  @override
   Future<String?> getAccessToken() async {
     return SecureStorageService.getAccessToken();
   }
 
+  @override
   Future<String?> getRefreshToken() async {
     return SecureStorageService.getRefreshToken();
   }

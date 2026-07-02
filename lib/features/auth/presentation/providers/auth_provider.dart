@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/network/app_exception.dart';
 import '../../data/models/user_model.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 
@@ -15,25 +16,27 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final _repository = AuthRepositoryImpl();
 
   final phoneController = TextEditingController();
-
   final formKey = GlobalKey<FormState>();
 
   void updatePhone(String value) {
     state = state.copyWith(
       phone: value,
       isValid: value.length == 10,
+      errorMessage: null,
     );
   }
 
   void updateOtp(String value) {
     state = state.copyWith(
       otp: value,
+      errorMessage: null,
     );
   }
 
-  Future<void> sendOtp() async {
+  Future<bool> sendOtp() async {
     state = state.copyWith(
       isLoading: true,
+      errorMessage: null,
     );
 
     try {
@@ -44,18 +47,29 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(
         isLoading: false,
       );
-    } catch (e) {
+
+      return true;
+    } on AppException catch (e) {
       state = state.copyWith(
         isLoading: false,
+        errorMessage: e.message,
       );
 
-      rethrow;
+      return false;
+    } catch (_) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'Something went wrong.',
+      );
+
+      return false;
     }
   }
 
-  Future<void> verifyOtp() async {
+  Future<bool> verifyOtp() async {
     state = state.copyWith(
       isVerifying: true,
+      errorMessage: null,
     );
 
     try {
@@ -67,17 +81,54 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(
         isVerifying: false,
       );
-    } catch (e) {
+
+      return true;
+    } on AppException catch (e) {
       state = state.copyWith(
         isVerifying: false,
+        errorMessage: e.message,
       );
 
-      rethrow;
+      return false;
+    } catch (_) {
+      state = state.copyWith(
+        isVerifying: false,
+        errorMessage: 'Something went wrong.',
+      );
+
+      return false;
     }
   }
 
-  Future<UserModel> getCurrentUser() async {
-    return await _repository.getCurrentUser();
+  Future<UserModel?> getCurrentUser() async {
+    try {
+      return await _repository.getCurrentUser();
+    } on AppException catch (e) {
+      state = state.copyWith(
+        errorMessage: e.message,
+      );
+
+      return null;
+    } catch (_) {
+      state = state.copyWith(
+        errorMessage: 'Something went wrong.',
+      );
+
+      return null;
+    }
+  }
+
+  void clearError() {
+    state = state.copyWith(
+      errorMessage: null,
+    );
+  }
+
+  void clearOtp() {
+    state = state.copyWith(
+      otp: '',
+      errorMessage: null,
+    );
   }
 
   @override
@@ -95,13 +146,18 @@ class AuthState {
   final bool isLoading;
   final bool isVerifying;
 
+  final String? errorMessage;
+
   const AuthState({
     this.phone = '',
     this.otp = '',
     this.isValid = false,
     this.isLoading = false,
     this.isVerifying = false,
+    this.errorMessage,
   });
+
+  bool get isOtpValid => otp.length == 6;
 
   AuthState copyWith({
     String? phone,
@@ -109,6 +165,7 @@ class AuthState {
     bool? isValid,
     bool? isLoading,
     bool? isVerifying,
+    String? errorMessage,
   }) {
     return AuthState(
       phone: phone ?? this.phone,
@@ -116,6 +173,7 @@ class AuthState {
       isValid: isValid ?? this.isValid,
       isLoading: isLoading ?? this.isLoading,
       isVerifying: isVerifying ?? this.isVerifying,
+      errorMessage: errorMessage,
     );
   }
 }

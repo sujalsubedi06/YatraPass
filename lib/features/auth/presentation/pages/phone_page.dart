@@ -51,26 +51,31 @@ class PhonePage extends ConsumerWidget {
                           isLoading: authState.isLoading,
                           onPressed: authState.isValid
                               ? () async {
-                            try {
-                              await authNotifier.sendOtp();
+                            final success =
+                            await authNotifier.sendOtp();
 
-                              if (!context.mounted) return;
+                            if (!context.mounted) return;
 
-                              context.go(
-                                '/otp',
-                                extra: authState.phone,
-                              );
-                            } catch (e) {
-                              if (!context.mounted) return;
-
+                            if (!success) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    e.toString(),
+                                    ref
+                                        .read(authProvider)
+                                        .errorMessage ??
+                                        'Something went wrong.',
                                   ),
                                 ),
                               );
+
+                              authNotifier.clearError();
+                              return;
                             }
+
+                            context.go(
+                              '/otp',
+                              extra: authState.phone,
+                            );
                           }
                               : null,
                         ),
